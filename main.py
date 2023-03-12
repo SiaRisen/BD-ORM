@@ -29,9 +29,11 @@ def main():
     session = Session()
 
     upload_info(session)
-    command = input("Введите имя издателя: ")
-    query = session.query(Publisher).join(Stock).join(Shop).join(Book).join(Sale).filter(Publisher.name.ilike(f'%{command}%'))
-    print(f'{query.stock.book.title} | {query.stock.shop.name} | {query.price} | {query.date_sale}')
+    publisher_name = input("Введите имя издателя: ")
+    query = session.query(Book.title, Shop.name, Sale.price, Sale.date_sale).join(Publisher).\
+        join(Book).join(Stock).join(Sale).join(Shop).filter(Publisher.name.like(f'%{publisher_name}%'))
+    for book, shop, price, date in query:
+        print(f'Название книги:{book.title} | Магазин:{shop.name} | Цена:{price} | Дата:{date}')
 
     session.close()
 
